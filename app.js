@@ -2,7 +2,30 @@ const fs = require('fs');
 const _ = require('lodash');
 const yargs = require('yargs');
 const notes = require('./notes');
-const argv = yargs.argv;
+const titleOptions = {
+  describe: 'Title of note',
+  demand: true,
+  alias: 't',
+};
+const bodyOptions = {
+  describe: 'The body of the note',
+  demand: true,
+  alias: 'b',
+};
+const argv = yargs
+  .command('add', 'Add a new note', {
+    title: titleOptions,
+    body: bodyOptions,
+  })
+  .command('list', 'List all notes')
+  .command('read', 'Read a note', {
+    title: titleOptions,
+    body: bodyOptions,
+  })
+  .command('remove', 'Remove a note', {
+    title: titleOptions,
+  })
+  .help().argv;
 var command = argv._[0];
 
 switch (command) {
@@ -10,7 +33,7 @@ switch (command) {
     var note = notes.addNote(argv.title, argv.body);
     if (note) {
       console.log(`Note added`);
-      logNote(note);
+      notes.logNote(note);
     } else {
       console.log('This note title already exists.');
     }
@@ -23,7 +46,9 @@ switch (command) {
   case 'read':
     var selectedNote = notes.getNote(argv.title);
     var readMessage = selectedNote
-      ? `Note retrieved - Title: ${selectedNote.title} Body: ${selectedNote.body}`
+      ? `Note retrieved - Title: ${selectedNote.title} Body: ${
+          selectedNote.body
+        }`
       : `Note does not exist`;
     console.log(readMessage);
     break;
